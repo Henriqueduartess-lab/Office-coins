@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Coins - Cofrinho em Grupo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border: #475569;
+            --gold: #fbbf24;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f35 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            font-size: 40px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* Grid Layout */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Form Section */
+        .form-section h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Stats Container */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        /* Aplicações */
+        .applications-section {
+            margin-top: 30px;
+        }
+
+        .applications-section h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .application-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .app-info {
+            flex: 1;
+        }
+
+        .app-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .app-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .app-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--success);
+            margin: 0 16px;
+        }
+
+        .app-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Emoji Reactions */
+        .emoji-reactions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .emoji-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .emoji-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .emoji-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-width: 20px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 24px;
+        }
+
+        /* Meta Annual */
+        .meta-annual {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(251, 191, 36, 0.1));
+            border: 1px solid var(--success);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .meta-annual h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--gold));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .grid-main {
+                gap: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">💰</div>
+            </div>
+            <h1>Office Coins</h1>
+            <p class="tagline">Cofrinho colaborativo entre amigos • Acompanhe suas metas juntos</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid-main">
+            <!-- Left: Form + Stats -->
+            <div>
+                <!-- Add Friend Card -->
+                <div class="card form-section">
+                    <h2>Novo Amigo</h2>
+                    <div class="form-group">
+                        <label for="friendName">Nome do Amigo</label>
+                        <input type="text" id="friendName" placeholder="Ex: João Silva">
+                    </div>
+                    <button class="btn btn-primary" onclick="addFriend()">+ Adicionar Amigo</button>
+                </div>
+
+                <!-- Add Application Card -->
+                <div class="card form-section" style="margin-top: 20px;">
+                    <h2>Registrar Aplicação</h2>
+                    <div class="form-group">
+                        <label for="friendSelect">Selecione o Amigo</label>
+                        <select id="friendSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Valor (R$)</label>
+                        <input type="number" id="amount" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="month">Mês</label>
+                        <select id="month">
+                            <option value="1">Janeiro</option>
+                            <option value="2">Fevereiro</option>
+                            <option value="3">Março</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Maio</option>
+                            <option value="6">Junho</option>
+                            <option value="7">Julho</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Setembro</option>
+                            <option value="10">Outubro</option>
+                            <option value="11">Novembro</option>
+                            <option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="addApplication()">✓ Registrar</button>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid" style="margin-top: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Geral</div>
+                        <div class="stat-value" id="totalGeneral">R$ 0,00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Nº de Amigos</div>
+                        <div class="stat-value" id="friendCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Aplicações</div>
+                        <div class="stat-value" id="appCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Chart -->
+            <div>
+                <!-- Meta Annual Card -->
+                <div class="card">
+                    <div class="meta-annual">
+                        <h3>Meta Anual</h3>
+                        <div class="form-group">
+                            <label for="annualGoal">Defina a Meta (R$)</label>
+                            <input type="number" id="annualGoal" placeholder="5000.00" step="0.01" onchange="updateGoal()">
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <span id="progressText">R$ 0,00 de R$ 0,00</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications List -->
+        <div class="card applications-section">
+            <h2>Aplicações por Amigo</h2>
+            <div id="applicationsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const EMOJIS = ['🎉', '🚀', '⭐', '👏', '💪', '🔥'];
+
+        class OfficeCoins {
+            constructor() {
+                this.data = {
+                    friends: [],
+                    applications: [],
+                    annualGoal: 5000
+                };
+                this.chart = null;
+                this.loadData();
+                this.init();
+            }
+
+            init() {
+                this.updateFriendSelect();
+                this.render();
+                this.setupCharts();
+                this.loadAnnualGoal();
+            }
+
+            loadData() {
+                const stored = localStorage.getItem('officeCoinsData');
+                if (stored) {
+                    this.data = JSON.parse(stored);
+                }
+            }
+
+            saveData() {
+                localStorage.setItem('officeCoinsData', JSON.stringify(this.data));
+            }
+
+            loadAnnualGoal() {
+                const goal = localStorage.getItem('annualGoal');
+                if (goal) {
+                    this.data.annualGoal = parseFloat(goal);
+                    document.getElementById('annualGoal').value = goal;
+                }
+            }
+
+            addFriend(name) {
+                if (!name.trim()) {
+                    alert('Digite o nome do amigo');
+                    return;
+                }
+
+                if (this.data.friends.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+                    alert('Este amigo já existe');
+                    return;
+                }
+
+                this.data.friends.push({
+                    id: Date.now(),
+                    name: name.trim(),
+                    createdAt: new Date().toLocaleDateString()
+                });
+
+                this.saveData();
+                this.updateFriendSelect();
+                this.render();
+                document.getElementById('friendName').value = '';
+            }
+
+            addApplication(friendId, amount, month) {
+                const friend = this.data.friends.find(f => f.id === parseInt(friendId));
+                if (!friend) {
+                    alert('Selecione um amigo');
+                    return;
+                }
+
+                if (!amount || amount <= 0) {
+                    alert('Digite um valor válido');
+                    return;
+                }
+
+                this.data.applications.push({
+                    id: Date.now(),
+                    friendId: parseInt(friendId),
+                    friendName: friend.name,
+                    amount: parseFloat(amount),
+                    month: parseInt(month),
+                    date: new Date().toLocaleDateString(),
+                    reactions: {}
+                });
+
+                this.saveData();
+                this.render();
+                this.setupCharts();
+                document.getElementById('amount').value = '';
+            }
+
+            removeApplication(appId) {
+                this.data.applications = this.data.applications.filter(a => a.id !== appId);
+                this.saveData();
+                this.render();
+                this.setupCharts();
+            }
+
+            addReaction(appId, emoji) {
+                const app = this.data.applications.find(a => a.id === appId);
+                if (app) {
+                    if (!app.reactions[emoji]) {
+                        app.reactions[emoji] = 0;
+                    }
+                    app.reactions[emoji]++;
+                    this.saveData();
+                    this.render();
+                }
+            }
+
+            updateFriendSelect() {
+                const select = document.getElementById('friendSelect');
+                select.innerHTML = '<option value="">Selecione um amigo...</option>';
+                this.data.friends.forEach(friend => {
+                    const option = document.createElement('option');
+                    option.value = friend.id;
+                    option.textContent = friend.name;
+                    select.appendChild(option);
+                });
+            }
+
+            getTotalByFriend(friendId) {
+                return this.data.applications
+                    .filter(a => a.friendId === friendId)
+                    .reduce((sum, a) => sum + a.amount, 0);
+            }
+
+            getTotalGeneral() {
+                return this.data.applications.reduce((sum, a) => sum + a.amount, 0);
+            }
+
+            formatMoney(value) {
+                return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            setupCharts() {
+                const ctx = document.getElementById('progressChart');
+                if (!ctx) return;
+
+                const total = this.getTotalGeneral();
+                const percentage = Math.min((total / this.data.annualGoal) * 100, 100);
+
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+
+                this.chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [percentage, 100 - percentage],
+                            backgroundColor: ['#10b981', '#334155'],
+                            borderColor: '#1e293b',
+                            borderWidth: 3,
+                            circumference: 360,
+                            rotation: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            render() {
+                this.updateStats();
+                this.updateProgressBar();
+                this.renderApplicationsList();
+            }
+
+            updateStats() {
+                const total = this.getTotalGeneral();
+                document.getElementById('totalGeneral').textContent = this.formatMoney(total);
+                document.getElementById('friendCount').textContent = this.data.friends.length;
+                document.getElementById('appCount').textContent = this.data.applications.length;
+            }
+
+            updateProgressBar() {
+                const total = this.getTotalGeneral();
+                const percentage = Math.min((total / this.data.annualGoal) * 100, 100);
+                document.getElementById('progressFill').style.width = percentage + '%';
+                document.getElementById('progressText').textContent = `${this.formatMoney(total)} de ${this.formatMoney(this.data.annualGoal)}`;
+                document.getElementById('progressPercent').textContent = Math.round(percentage) + '%';
+            }
+
+            renderApplicationsList() {
+                const container = document.getElementById('applicationsList');
+
+                if (this.data.applications.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>Nenhuma aplicação registrada ainda.<br>Comece a guardar! 💎</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const groupedByFriend = {};
+                this.data.applications.forEach(app => {
+                    if (!groupedByFriend[app.friendId]) {
+                        groupedByFriend[app.friendId] = [];
+                    }
+                    groupedByFriend[app.friendId].push(app);
+                });
+
+                let html = '';
+                Object.keys(groupedByFriend).forEach(friendId => {
+                    const apps = groupedByFriend[friendId];
+                    const friendName = apps[0].friendName;
+                    const total = apps.reduce((sum, a) => sum + a.amount, 0);
+
+                    html += `
+                        <div style="margin-bottom: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 12px;">
+                                <h3 style="font-size: 16px; color: var(--text-primary); margin: 0;">${friendName}</h3>
+                                <span style="font-size: 14px; color: var(--primary-light); font-weight: 700;">${this.formatMoney(total)}</span>
+                            </div>
+                    `;
+
+                    apps.forEach(app => {
+                        const reactions = app.reactions || {};
+                        const reactionHTML = Object.entries(reactions)
+                            .map(([emoji, count]) => `<div class="emoji-btn"><span>${emoji}</span><span class="emoji-count">${count}</span></div>`)
+                            .join('');
+
+                        html += `
+                            <div class="application-item">
+                                <div class="app-info">
+                                    <div class="app-name">Mês ${app.month} • ${app.date}</div>
+                                    <div class="emoji-reactions">${reactionHTML}</div>
+                                </div>
+                                <div class="app-value">${this.formatMoney(app.amount)}</div>
+                                <div class="app-actions">
+                                    <button class="btn btn-secondary" onclick="addEmojiReaction(${app.id})">😊</button>
+                                    <button class="btn btn-danger" onclick="removeApp(${app.id})">🗑</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += '</div>';
+                });
+
+                container.innerHTML = html;
+            }
+        }
+
+        // Global instance
+        let app = new OfficeCoins();
+
+        // Functions
+        function addFriend() {
+            const name = document.getElementById('friendName').value;
+            app.addFriend(name);
+        }
+
+        function addApplication() {
+            const friendId = document.getElementById('friendSelect').value;
+            const amount = document.getElementById('amount').value;
+            const month = document.getElementById('month').value;
+            app.addApplication(friendId, amount, month);
+        }
+
+        function removeApp(appId) {
+            if (confirm('Tem certeza que deseja remover esta aplicação?')) {
+                app.removeApplication(appId);
+            }
+        }
+
+        function addEmojiReaction(appId) {
+            const emojis = ['🎉', '🚀', '⭐', '👏', '💪', '🔥', '💯', '❤️'];
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            app.addReaction(appId, randomEmoji);
+        }
+
+        function updateGoal() {
+            const goal = parseFloat(document.getElementById('annualGoal').value) || 5000;
+            app.data.annualGoal = goal;
+            localStorage.setItem('annualGoal', goal);
+            app.render();
+            app.setupCharts();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
